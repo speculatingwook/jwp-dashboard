@@ -24,6 +24,8 @@ class Stage4Test {
         assertThat(actual.getAccount()).isEqualTo("gugu");
     }
 
+    // test
+
     private static DIContainer createDIContainer() {
         final var rootPackageName = Stage4Test.class.getPackage().getName();
         return DIContainer.createContainerForPackage(rootPackageName);
