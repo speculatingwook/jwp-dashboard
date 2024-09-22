@@ -8,7 +8,6 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -52,27 +51,22 @@ public class AnnotationHandlerMapping {
      */
     public void initialize() {
         Set<Class<?>> controllerAnnotatedClasses = getAllClassesInPackage(basePackage);
-        for (Class<?> clazz : controllerAnnotatedClasses) {
-            setHandlerExecutions(clazz);
+        for (Class<?> controller : controllerAnnotatedClasses) {
+            setHandlerExecutions(controller);
         }
         log.info("Initialized AnnotationHandlerMapping!");
     }
 
-    private void setHandlerExecutions(Class clazz){
-        for(Method method : clazz.getDeclaredMethods()) {
+    private void setHandlerExecutions(Class<?> controller){
+        for(Method method : controller.getDeclaredMethods()) {
             RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
 
             try{
-                Constructor<?> constructor = clazz.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                Object instance = constructor.newInstance();
+                Object instance = controller.getDeclaredConstructor().newInstance();
 
                 HandlerExecution handlerExecution = new HandlerExecution(instance, method);
                 HandlerKey newHandlerKey = new HandlerKey(requestMapping.value(), requestMapping.method()[0]);
 
-                log.info("requestInfo: " + requestMapping.value());
-                log.info("requestMethod: " + requestMapping.method());
-                log.info("controller: " + instance.getClass().getName());
                 handlerExecutions.put(newHandlerKey, handlerExecution);
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
                 throw new RuntimeException(e);
@@ -87,9 +81,9 @@ public class AnnotationHandlerMapping {
      */
     public Object getHandler(final HttpServletRequest request) {
         String requestURI = request.getRequestURI();
-        RequestMethod method = RequestMethod.valueOf(request.getMethod());
+        RequestMethod requestMethod = RequestMethod.valueOf(request.getMethod());
 
-        HandlerKey targetHandlerKey = new HandlerKey(requestURI, method);
+        HandlerKey targetHandlerKey = new HandlerKey(requestURI, requestMethod);
 
         return handlerExecutions.get(targetHandlerKey);
     }
