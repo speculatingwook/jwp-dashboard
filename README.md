@@ -26,7 +26,7 @@
 + [x] study/src/test/java/servlet 디렉토리 내부의 테스트를 수행한다.
 
 # 1단계 - @MVC 구현하기
-+ [ ] AnnotationHandlerMappingTest가 정상 동작하게 한다.
++ [ ] AnnotationHandlerMappingTest 테스트를 통과한다.
 + [ ] DispatcherServlet에서 HandlerMapping 인터페이스를 활용하여 AnnotationHandlerMapping과 ManualHandlerMapping 둘다 처리할 수 있게 한다.
 
 # 2단계 - 점진적인 리팩터링

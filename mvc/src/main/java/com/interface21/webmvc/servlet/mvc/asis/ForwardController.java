@@ -5,6 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Objects;
 
+/**
+ * Dispatcher Servlet 역할을 하는 클래스?
+ * MVC 아키텍처의 FrontController 역할 / DispatcherServlet?
+ */
 public class ForwardController implements Controller {
 
     private final String path;
