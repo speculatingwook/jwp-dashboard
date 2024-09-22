@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Handler Mapping 역할을 하는 클래스
- * 일단 현재까지는 AnnotationHandelrMappingTest에서 samples 패키지만 불러옴(TestController 존재)
- * Reflection으로 어노테이션에 맞는 함수를 불러와, HandlerExecution에 등록
+ * AnnotationHandlerMapping 클래스는 Handler Mapping 역할을 수행
+ * 이 클래스는 지정된 패키지 내의 @Controller 어노테이션이 붙은 클래스들을 스캔하고,
+ * @RequestMapping 어노테이션을 분석하여 URL과 HTTP 메서드에 따른 핸들러 실행을 매핑
  */
 public class AnnotationHandlerMapping {
 
@@ -76,8 +76,8 @@ public class AnnotationHandlerMapping {
 
     /**
      *
-     * @param request request를 기준으로 기존의 HandlerKey에서 일치하는 값을 찾고, 찾게 되면 ExecutionHandler 반환
-     * @return
+     * @param request 기존의 HandlerKey에서 일치하는 값의 ExecutionHandler 반환
+     * @return HandlerExecution
      */
     public Object getHandler(final HttpServletRequest request) {
         String requestURI = request.getRequestURI();
