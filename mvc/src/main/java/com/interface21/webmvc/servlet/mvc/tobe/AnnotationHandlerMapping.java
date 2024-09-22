@@ -43,7 +43,7 @@ public class AnnotationHandlerMapping {
 
         // add all annotated classes
         annotatedClasses.addAll(reflections.getTypesAnnotatedWith(Controller.class));
-        log.info("annotated classes: " + annotatedClasses.toString());
+        log.info("annotated classes: " + annotatedClasses);
         return annotatedClasses;
     }
 
@@ -53,23 +53,31 @@ public class AnnotationHandlerMapping {
     public void initialize() {
         Set<Class<?>> controllerAnnotatedClasses = getAllClassesInPackage(basePackage);
         for (Class<?> clazz : controllerAnnotatedClasses) {
-            for(Method method : clazz.getDeclaredMethods()) {
-                RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
-                try{
-                    Constructor<?> constructor = clazz.getDeclaredConstructor();
-                    constructor.setAccessible(true);
-                    Object instance = constructor.newInstance();
-                    log.info("requestInfo: " + requestMapping.value());
-                    log.info("requestMethod: " + requestMapping.method());
-                    log.info("controller: " + instance.getClass().getName());
-                    handlerExecutions.put(new HandlerKey(requestMapping.value(), requestMapping.method()[0]), new HandlerExecution(instance, method));
-                } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
+            setHandlerExecutions(clazz);
         }
         log.info("Initialized AnnotationHandlerMapping!");
+    }
+
+    private void setHandlerExecutions(Class clazz){
+        for(Method method : clazz.getDeclaredMethods()) {
+            RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
+
+            try{
+                Constructor<?> constructor = clazz.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                Object instance = constructor.newInstance();
+
+                HandlerExecution handlerExecution = new HandlerExecution(instance, method);
+                HandlerKey newHandlerKey = new HandlerKey(requestMapping.value(), requestMapping.method()[0]);
+
+                log.info("requestInfo: " + requestMapping.value());
+                log.info("requestMethod: " + requestMapping.method());
+                log.info("controller: " + instance.getClass().getName());
+                handlerExecutions.put(newHandlerKey, handlerExecution);
+            } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
@@ -78,14 +86,11 @@ public class AnnotationHandlerMapping {
      * @return
      */
     public Object getHandler(final HttpServletRequest request) {
-        HandlerKey targetHandlerKey = new HandlerKey(request.getRequestURI(), RequestMethod.valueOf(request.getMethod()));
-        for(Map.Entry<HandlerKey, HandlerExecution> entry : handlerExecutions.entrySet()) {
-            HandlerKey handlerKey = entry.getKey();
-            if(handlerKey.toString().equals(targetHandlerKey.toString())) {
-                return entry.getValue();
-            }
-        }
-        log.info("handler not found!");
-        return null;
+        String requestURI = request.getRequestURI();
+        RequestMethod method = RequestMethod.valueOf(request.getMethod());
+
+        HandlerKey targetHandlerKey = new HandlerKey(requestURI, method);
+
+        return handlerExecutions.get(targetHandlerKey);
     }
 }

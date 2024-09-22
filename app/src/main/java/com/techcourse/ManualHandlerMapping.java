@@ -9,7 +9,7 @@ import com.interface21.webmvc.servlet.mvc.asis.ForwardController;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ManualHandlerMapping {
+public class ManualHandlerMapping implements HandlerMapping {
 
     private static final Logger log = LoggerFactory.getLogger(ManualHandlerMapping.class);
 
