@@ -1,8 +1,13 @@
 package com.interface21.webmvc.servlet.mvc.tobe;
 
+import com.interface21.web.bind.annotation.RequestMapping;
 import com.interface21.web.bind.annotation.RequestMethod;
 
 import java.util.Objects;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class HandlerKey {
 
@@ -12,6 +17,15 @@ public class HandlerKey {
     public HandlerKey(final String url, final RequestMethod requestMethod) {
         this.url = url;
         this.requestMethod = requestMethod;
+    }
+
+    public static Set<HandlerKey> allFrom(Method handlerMethod) {
+        final RequestMapping requestMapping = handlerMethod.getAnnotation(RequestMapping.class);
+        final String url = requestMapping.value();
+        final RequestMethod[] requestMethods = requestMapping.method();
+        return Arrays.stream(requestMethods)
+                .map(requestMethod -> new HandlerKey(url, requestMethod))
+                .collect(Collectors.toSet());
     }
 
     @Override

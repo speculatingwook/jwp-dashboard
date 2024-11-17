@@ -1,4 +1,4 @@
-package com.interface21.webmvc.servlet.mvc.tobe;
+package com.interface21.webmvc.servlet.mvc.adapter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
  * - 이 클래스는 HTTP 요청을 받아 해당하는 컨트롤러의 메서드를 실행하는 역할
  * - AnnotationHandlerMapping에서 제공하는 HandlerKey를 기반으로 동작
  */
-public class HandlerExecution {
+public class HandlerExecution implements Handler {
     private static final Logger log = LoggerFactory.getLogger(HandlerExecution.class);
 
     private final Object controller;
